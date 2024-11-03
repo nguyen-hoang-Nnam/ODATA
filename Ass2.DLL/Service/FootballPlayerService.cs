@@ -137,7 +137,6 @@ namespace Ass2.BLL.Service
 
         private async Task<string> GenerateFootballPlayerIdAsync()
         {
-            // Retrieve the latest player ID
             var lastPlayer = await _context.FootballPlayers
                 .OrderByDescending(p => p.FootballPlayerId)
                 .FirstOrDefaultAsync();
@@ -146,13 +145,11 @@ namespace Ass2.BLL.Service
 
             if (lastPlayer != null && lastPlayer.FootballPlayerId.StartsWith("PL"))
             {
-                // Extract the numeric part and increment it
                 var numberPart = int.Parse(lastPlayer.FootballPlayerId.Substring(2));
                 newId = $"PL{(numberPart + 1).ToString("D5")}"; // Increment the number
             }
             else
             {
-                // If no players found, start from PL00960
                 newId = "PL00960";
             }
 

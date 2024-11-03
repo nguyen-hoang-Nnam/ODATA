@@ -22,12 +22,14 @@ namespace Ass2.API.Controllers
 
         [EnableQuery]
         [HttpGet]
+        [Authorize(Roles = "System Admin")]
         public IQueryable<FootballPlayerDTO> GetFootballPlayers()
         {
             return _playerService.GetAllPlayersAsQueryable();
         }
 
         [HttpGet("all")]
+        [Authorize(Roles = "System Admin, Staff")]
         public async Task<IActionResult> GetAllPlayers(string? searchTerm)
         {
             var players = await _playerService.GetAllPlayersWithClubAsync(searchTerm ?? string.Empty);
@@ -35,6 +37,7 @@ namespace Ass2.API.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize(Roles = "System Admin")]
         public async Task<IActionResult> GetPlayerById(string id)
         {
             var player = await _playerService.GetPlayerByIdAsync(id);
@@ -46,7 +49,7 @@ namespace Ass2.API.Controllers
         }
 
         [HttpPost("create")]
-        //[Authorize(Roles = "System Admin")]
+        [Authorize(Roles = "System Admin")]
         public async Task<IActionResult> CreatePlayer([FromBody] CreateFootballPlayerDTO playerDTO)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
@@ -57,7 +60,7 @@ namespace Ass2.API.Controllers
         }
 
         [HttpPut("update/{id}")]
-        //[Authorize(Roles = "System Admin")]
+        [Authorize(Roles = "System Admin")]
         public async Task<IActionResult> UpdatePlayer(string id, [FromBody] UpdateFootballPlayerDTO playerDTO)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
@@ -71,7 +74,7 @@ namespace Ass2.API.Controllers
         }
 
         [HttpDelete("delete/{id}")]
-        //[Authorize(Roles = "System Admin")]
+        [Authorize(Roles = "System Admin")]
         public async Task<IActionResult> DeletePlayer(string id)
         {
             var response = await _playerService.DeletePlayerAsync(id);

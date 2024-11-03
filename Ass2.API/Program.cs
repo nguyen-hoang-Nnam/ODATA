@@ -12,6 +12,8 @@ using Microsoft.AspNetCore.OData;
 using Ass2.Model.Models;
 using Microsoft.OData.Edm;
 using Microsoft.OData.ModelBuilder;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -60,6 +62,25 @@ builder.Services.AddCors(options =>
         });
 });
 
+
+// JWT Authentication
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(builder.Configuration["Jwt:Secret"])),
+        ValidateIssuer = false,
+        ValidateAudience = false,
+    };
+});
+
+
 // Bear
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(option =>
@@ -89,6 +110,8 @@ builder.Services.AddSwaggerGen(option =>
 
 var app = builder.Build();
 
+app.UseRouting();
+
 // Configure the HTTP request pipeline.
 app.UseCors("AllowSpecificOrigin");
 app.UseSwagger();
@@ -103,9 +126,7 @@ app.UseSwaggerUI(c =>
 
 app.UseHttpsRedirection();
 
-app.UseRouting();
-
-
+app.UseAuthentication();
 
 app.UseAuthorization();
 
